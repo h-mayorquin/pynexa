@@ -5,7 +5,8 @@ This is the main class for Nexa.
 import numpy as np
 from sklearn import manifold, cluster
 
-from nexa.nexa_data import NexaData
+from nexa_data import NexaData
+
 
 class Nexa():
     """
@@ -47,7 +48,7 @@ class Nexa():
         self.cluster_to_sensor_mapping = None
         self.cluster_to_data_centers_mapping = None
 
-    def calculate_distance_matirx(self):
+    def calculate_distance_matrix(self):
         """
         Calculates the distance between the sensors.
 
@@ -141,3 +142,14 @@ class Nexa():
             centers = classifier.cluster_centers_
             self.cluster_to_data_centers_mapping[cluster_n] = centers
 
+    def calculate_all(self):
+        """
+        Calculate all the quantities available
+
+        :return: None
+        """
+        self.calculate_distance_matrix()
+        self.calculate_embedding()
+        self.calculate_sensor_clustering()
+        self.calculate_cluster_to_sensors()
+        self.calculate_data_clustering()

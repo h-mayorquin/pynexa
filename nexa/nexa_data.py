@@ -4,7 +4,7 @@ should wrap the data that is going to be analyzed with Nexa.
 """
 
 
-class NexaData():
+class NexaData:
     """
     This class is used to wrap the data.
 
@@ -18,7 +18,7 @@ class NexaData():
         :return:
         """
         self.temporal_distance = distance_matrix
-        self.DM =  data_matrix
+        self.DM = data_matrix
 
     def calculate_data_matrix(self):
         """
