@@ -13,4 +13,4 @@ If you run it you should produce a segmentation of the space given by the
 sensor clustering obtained along the **Nexa** pipeline. The segmentation should 
 look like this.
 
-![mnist_example][https://github.com/h-mayorquin/pynexa/blob/master/mnist_sensor_clustering.png]
+![mnist_example](https://github.com/h-mayorquin/pynexa/blob/master/mnist_sensor_clustering.png)
