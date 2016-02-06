@@ -9,20 +9,22 @@ Y = training_labels[:Ndata]
 # Convert to float
 X = X.astype('float')
 
-# Add some noise
+# Add some noise in order to avoid 0's in the correlation
 X += np.random.rand(X.shape[0], X.shape[1])
 
 # Need to calculate the distance and the data in X
-data = X.T
-distance = 1 - np.abs(np.corrcoef(data))
+data = X.T  # We put the data the sensors in the 0 axis and the data in the 1 axis.
+distance = 1 - np.abs(np.corrcoef(data))  # Calculate the correlation coefficients
+
+# Wrap the data in the NexaData format.
 nexa_data = NexaData(data, distance)
 
-# Now we do the Nexa thing
+# Nexa parameters
 Nsensor_clustering = 5
 Ndata_clustering = 10
 Nembedding = 3
 
-# Calculate all the quantities
+# Build Nexa object and calculate all the quantities
 nexa_object = Nexa(nexa_data, Nsensor_clustering, Ndata_clustering, Nembedding)
 
 # First we calculate the distance matrix
