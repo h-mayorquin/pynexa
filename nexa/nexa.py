@@ -6,7 +6,7 @@ import numpy as np
 from sklearn import manifold, cluster
 
 from nexa_data import NexaData
-
+from aux_functions import softmax_base
 
 class Nexa():
     """
@@ -49,7 +49,7 @@ class Nexa():
         self.cluster_to_data_centers_mapping = None
 
     def calculate_distance_matrix(self):
-        """
+        """2
         Calculates the distance between the sensors.
 
         :return: Calculates similar distance matrix
@@ -153,3 +153,134 @@ class Nexa():
         self.calculate_sensor_clustering()
         self.calculate_cluster_to_sensors()
         self.calculate_data_clustering()
+
+    def build_code_vectors(self):
+        """
+        Build the code vectors with the non-binary representation.
+        That is, it assigns to each to each sensor cluster the
+        data cluster to which it belongs.
+        :return: a list with the code vectors
+        """
+
+        code_vectors = []
+        cluster_to_sensor = self.cluster_to_sensor_mapping
+        cluster_to_data_centers = self.cluster_to_data_centers_mapping
+
+        # For each data element
+        for t in range(self.Ndata):
+            vector = np.zeros(self.Nsensor_clusters)
+            for Ncluster, cluster_indexes in cluster_to_sensor.items():
+                # Get the data for that cluster
+                cluster_data = self.data_matrix[cluster_indexes, t]
+                # Retrieve the centers of the data clusters
+                data_centers = cluster_to_data_centers[Ncluster]
+                # Calculate the distance between the data and the data centers
+                dot = np.linalg.norm(data_centers - cluster_data, axis=1)
+                # Store the number of the closets one
+                vector[Ncluster] = np.argmin(dot)
+
+            code_vectors.append(vector)
+
+        return np.asarray(code_vectors)
+
+    def build_code_vectors_winner(self):
+        """
+        Binary representation with winner takes all
+
+        :return: a list with the code vectors
+        """
+
+        code_vectors = []
+        cluster_to_sensor = self.cluster_to_sensor_mapping
+        cluster_to_data_centers = self.cluster_to_data_centers_mapping
+
+        # For each point in the data
+        for t in range(self.Ndata):
+            vector = np.zeros(self.Nsensor_clusters * self.Ndata_clusters)
+            for Ncluster, cluster_indexes in cluster_to_sensor.items():
+                # Get the data for that cluster
+                cluster_data = self.data_matrix[cluster_indexes, t]
+                # Retrieve the centers of the data clusters
+                data_centers = cluster_to_data_centers[Ncluster]
+                # Calculate the distance between the data and the data centers
+                distance = np.linalg.norm(data_centers - cluster_data, axis=1)
+                # Store the one with the minimal distance (the winner)
+                data_index = np.argmin(distance)
+                vector_index = Ncluster * self.Ndata_clusters + data_index
+                vector[vector_index] = 1
+
+            code_vectors.append(vector)
+
+        return np.asarray(code_vectors)
+
+    def build_code_vectors_distance(self):
+        """
+        Binary representation with distance.
+
+        :return: a list of the code vectors
+        """
+
+        code_vectors = []
+        cluster_to_sensor = self.cluster_to_sensor_mapping
+        cluster_to_data_centers = self.cluster_to_data_centers_mapping
+
+        # For each point in the data
+        for t in range(self.Ndata):
+            vector = np.zeros(self.Nsensor_clusters * self.Ndata_clusters)
+
+            for Ncluster, cluster_indexes in cluster_to_sensor.items():
+                # Get the data for that cluster
+                cluster_data = self.data_matrix[cluster_indexes, t]
+                data_centers = cluster_to_data_centers[Ncluster]
+
+                # Calculate the distance between the data and the data centers
+                distance = np.linalg.norm(data_centers - cluster_data, axis=1)
+
+                # Now let's put that between Ncluster and (Ncluster + 1)
+                start = Ncluster * self.Ndata_clusters
+                end = (Ncluster + 1) * self.Ndata_clusters
+                vector[start:end] = distance
+
+            # After the calculation move the vector to the list
+            code_vectors.append(vector)
+
+        return np.asarray(code_vectors)
+
+    def build_code_vectors_softmax(self):
+        """
+        Binary representation with softmax
+
+        :return: a list of the code vectors
+        """
+
+        code_vectors = []
+        cluster_to_sensor = self.cluster_to_sensor_mapping
+        cluster_to_data_centers = self.cluster_to_data_centers_mapping
+
+        # For each point in the data
+        for t in range(self.Ndata):
+            vector = np.zeros(self.Nsensor_clusters * self.Ndata_clusters)
+
+            for Ncluster, cluster_indexes in cluster_to_sensor.items():
+                # Get the data for that cluster
+                cluster_data = self.data_matrix[cluster_indexes, t]
+                data_centers = cluster_to_data_centers[Ncluster]
+
+                # Calculate the distance between the data and the data centers
+                distance = np.linalg.norm(data_centers - cluster_data, axis=1)
+                # Calculate the softmax
+                softmax = softmax_base(-distance)
+
+                # Now let's put that between Ncluster and (Ncluster + 1)
+                start = Ncluster * self.Ndata_clusters
+                end = (Ncluster + 1) * self.Ndata_clusters
+                vector[start:end] = softmax
+
+            # After the calculation move the vector to the list
+            code_vectors.append(vector)
+
+        return np.asarray(code_vectors)
+
+
+
+

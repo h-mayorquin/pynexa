@@ -23,12 +23,12 @@ distance = 1 - np.abs(np.corrcoef(data))  # Calculate the correlation coefficien
 nexa_data = NexaData(data, distance)
 
 # Nexa parameters
-Nsensor_clustering = 5
-Ndata_clustering = 10
+Nsensor_clusters = 5
+Ndata_clusters = 3
 Nembedding = 3
 
 # Build Nexa object and calculate all the quantities
-nexa_object = Nexa(nexa_data, Nsensor_clustering, Ndata_clustering, Nembedding)
+nexa_object = Nexa(nexa_data, Nsensor_clusters, Ndata_clusters, Nembedding)
 
 # First we calculate the distance matrix
 nexa_object.calculate_distance_matrix()
@@ -66,3 +66,9 @@ for sensor, cluster in enumerate(sensor_to_cluster):
 plt.matshow(matrix_to_visualize)
 plt.colorbar()
 plt.show()
+
+# Now we get the code_vectors
+code_vectors = nexa_object.build_code_vectors()
+code_vectors_winner = nexa_object.build_code_vectors_winner()
+code_vectors_distance = nexa_object.build_code_vectors_distance()
+code_vectors_softmax = nexa_object.build_code_vectors_softmax()
