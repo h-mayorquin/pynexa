@@ -8,3 +8,6 @@ There are two important classes one that wraps the data in a specific format and
 another class that knows how to process that specfici format.
 
 In the file `mnist_demo.py` an example on how to run the pipeline can be found.
+
+If you run it you should produce a segmentation of the space given by the
+sensor clustering obtained along the **Nexa** pipeline.
